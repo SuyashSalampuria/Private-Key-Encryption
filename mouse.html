@@ -1,0 +1,995 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+<title>A Mouse Pointer Random Number Generator</title>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+<meta http-equiv="content-language" content="en-us">
+
+
+
+<SCRIPT type="text/javascript"><!--
+
+var rDiv, oTxt, x0, x1, y0, y1, sx0, sy0, sx1, sy1, xStr, yStr, xyStr, pStr, qStr, anStrLen, bL, bT,
+  mR, oStr, oStrSaved, cnt, cP, aA, aDiv, fT, ji, jj;
+
+var anStr = "";
+var ucStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+var lcStr = "abcdefghijklmnopqrstuvwxyz";
+var digitStr = "0123456789";
+var b64Str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+var lfArray = new Array(
+83.1722817764, //a
+15.8560490046,
+27.7359622256,
+44.6445890761,
+132.9047983665,
+25.2528075549,
+20.241194487,
+62.9004594181,
+71.2217968351,
+1.1527565084,
+6.4483154671,
+42.3034711588,
+25.7942827973,
+72.0409647779,
+76.0977539561,
+17.5657223073,
+1.0982644206,
+63.497064829,
+65.819295559,
+93.0777182236,
+28.7307299643,
+10.5797600817,
+21.8570699336,
+1.7473200613,
+18.629913221,
+1,             // z
+244.7909647779 // space
+);
+
+var EnglishStr = "";
+for (var i=0; i<26; i++)
+  EnglishStr += repeatStr(String.fromCharCode(97 + i), Math.round(lfArray[i]));
+EnglishStr += repeatStr(" ", Math.round(lfArray[26])); // 1277
+EnglishStr += repeatStr(" ", 30); // account for deleted space repeats
+EnglishStr = EnglishStr.replace(/u/, ""); // subtract 1 for those inserted after q
+var EStrLen = EnglishStr.length; // alert(EStrLen); // 1306
+var curr;
+var prev = "";
+
+var mem = "";
+
+var fTable;
+var iW = 200;
+var iH = 200;
+
+var palette64 = new Array(
+"808080",
+"000000",
+"ffffff",
+"555555",
+"aaaaaa",
+"0000ff",
+"00ff00",
+"ff0000",
+"ffff00",
+"ff00ff",
+"00ffff",
+"55aaff",
+"aaff55",
+"ff55aa",
+"aa5500",
+"00aa55",
+"000055",
+"0000aa",
+"005500",
+"005555",
+"0055aa",
+"0055ff",
+"00aa00",
+"00aaaa",
+"00aaff",
+"00ff55",
+"00ffaa",
+"550000",
+"550055",
+"5500aa",
+"5500ff",
+"555500",
+"5555aa",
+"5555ff",
+"55aa00",
+"55aa55",
+"55aaaa",
+"55ff00",
+"55ff55",
+"55ffaa",
+"55ffff",
+"aa0000",
+"aa0055",
+"aa00aa",
+"aa00ff",
+"aa5555",
+"aa55aa",
+"aa55ff",
+"aaaa00",
+"aaaa55",
+"aaaaff",
+"aaff00",
+"aaffaa",
+"aaffff",
+"ff0055",
+"ff00aa",
+"ff5500",
+"ff5555",
+"ff55ff",
+"ffaa00",
+"ffaa55",
+"ffaaaa",
+"ffaaff",
+"ffff55",
+"ffffaa");
+
+var color64Str = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/";
+
+
+
+window.onload = function() {
+
+rDiv = document.getElementById("randomDiv"); // 256 × 256
+
+oTxt = document.theForm.outputTxt;
+
+cP = document.getElementById("countP");
+
+aA = document.getElementById("analyzeA")
+
+aDiv = document.getElementById("analyzeDiv");
+
+fT = document.theForm.C10;
+
+x0 = 0;
+y0 = 0;
+sx0 = 0;
+sy0 = 0;
+
+oStrSaved = "";
+
+cnt = 0;
+
+if (document.theForm.R1[2].checked)
+  jj = 2000;
+else if (document.theForm.R1[1].checked)
+  jj = 200;
+else if (document.theForm.R1[0].checked)
+  jj = 20;
+jj = (document.theForm.C11.checked ? Math.floor(Math.random() * jj) : 1);
+
+
+
+rDiv.onmousemove = function(e) { getMouse(e); }
+
+
+
+with (document.theForm) {
+  for (var i=0; i<R0.length; i++)
+    R0[i].onclick = function() {
+      oTxt.value = "";
+      oStrSaved = "";
+      cP.innerHTML = "&nbsp;";
+      aDiv.innerHTML = "";
+			x0 = 0;
+			y0 = 0;
+			sx0 = 0;
+			sy0 = 0;
+      cnt = 0;
+      if ((R0[0].checked) || (R0[1].checked) || (R0[2].checked) || (R0[3].checked))
+        aA.style.display = "";
+      else
+        aA.style.display = "none";
+    }
+}
+
+
+
+with (document.theForm) {
+	if ((R0[0].checked) || (R0[1].checked) || (R0[2].checked) || (R0[3].checked))
+		aA.style.display = "";
+	else
+		aA.style.display = "none";
+}
+
+
+
+speedUp();
+
+
+
+drawFTable();
+
+} // window.onload
+
+
+
+
+
+
+
+
+
+
+
+function getMouse(e) {
+
+e = (window.event ? window.event : e);
+
+x1 = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - rDiv.offsetLeft; // mouse position
+y1 = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - rDiv.offsetTop;
+
+sx1 = x1 - x0; // distance moved
+sy1 = y1 - y0;
+
+if ((sx0*sx1 < 0) || (sy0*sy1 < 0)) { // direction change
+
+  xStr = padString(x1.toString(2), 8);
+  yStr = padString(y1.toString(2), 8);
+  xyStr = xStr + yStr;
+
+  jj = Math.ceil(Math.random() * ji); // random number of repeats each time
+
+  for (var j=0; j<jj; j++) { // repeat
+
+  mR = Math.floor(Math.random() * 65536);
+
+  pStr = padString((parseInt(xyStr, 2) ^ mR).toString(2), 16); // salt the random number with the mouse position
+
+  oStr = "";
+
+
+
+  if (document.theForm.R0[0].checked) { // binary
+    oStr = pStr;
+
+    cnt += 16;
+    if (fT.checked) {
+		  if (cnt % 80 == 0)
+		    oStr += "\r\n";
+    }
+  }
+
+
+
+  else if (document.theForm.R0[1].checked) { // hexadecimal
+		for (var i=0; i<16; i+=4) {
+		  oStr += parseInt(pStr.substr(i, 4), 2).toString(16);
+
+		  cnt ++;
+      if (fT.checked) {
+		    if (cnt % 80 == 0)
+		      oStr += "\r\n";
+      }
+    }
+  }
+
+
+
+  else if (document.theForm.R0[2].checked) { // decimal
+		for (var i=0; i<16; i+=4) {
+		  qStr = parseInt(pStr.substr(i, 4), 2); // 0-16
+      if (qStr < 10) {
+		    oStr += qStr.toString();
+
+		    cnt ++;
+        if (fT.checked) {
+				  if (cnt % 100 == 0)
+				    oStr += "\r\n";
+        }
+      }
+		}
+  }
+
+
+
+  else if (document.theForm.R0[3].checked) { // base64
+		for (var i=0; i<16; i+=8) {
+		  qStr = parseInt(pStr.substr(i, 6), 2); // 0-63
+		  oStr += b64Str.charAt(qStr);
+
+		  cnt ++;
+      if (fT.checked) {
+					if (cnt % 72 == 0)
+						oStr += "\r\n";
+      }
+		}
+  }
+
+
+
+  else if (document.theForm.R0[4].checked) { // custom
+    anStr = "";
+    if (document.theForm.C0.checked)
+      anStr += ucStr;
+    if (document.theForm.C1.checked)
+      anStr += lcStr;
+    if (document.theForm.C2.checked)
+      anStr += digitStr;
+    if (document.theForm.C3.checked)
+      anStr += document.theForm.specialChars.value.replace(/[\r\n\t]/g, "");
+    if (anStr.length > 65536)
+      anStr = anStr.substr(0, 65536);
+    anStrLen = anStr.length;
+
+    bL = Math.ceil(Math.log(anStrLen)/Math.log(2)); // bit length
+    bL = Math.max(bL, 1);
+    bT = Math.floor(16/bL) * bL; // number of used bits
+
+		for (var i=0; i<bT; i+=bL) {
+		  qStr = parseInt(pStr.substr(i, bL), 2);
+      if (qStr < anStrLen) {
+		    oStr += anStr[qStr];
+
+		    cnt ++;
+        if (fT.checked) {
+				  if (cnt % 100 == 0)
+				    oStr += "\r\n";
+        }
+      }
+		}
+  }
+
+
+
+  else if (document.theForm.R0[5].checked) { // English letter frequency
+	  qStr = parseInt(pStr.substr(i, 11), 2);
+    if (qStr < EStrLen) {
+      curr = EnglishStr.charAt(qStr);
+      if (curr + prev != "  ") {
+        oStr += curr;
+        prev = curr;
+        cnt ++;
+      }
+      if (curr == "q") {
+        oStr += "u";
+        prev = "u";
+        cnt ++;
+      }
+    }
+  }
+
+
+
+  if (!document.theForm.C12.checked) // hide output
+    oTxt.value += oStr;
+  oStrSaved += oStr;
+  console.log(oStrSaved)
+  cP.innerHTML = "n = " + cnt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  console.log(cnt)
+console.log(cP.innerHTML)
+  xyStr = fyShuffle(xyStr); // shuffle the bit string for each repeat
+
+  } // repeat
+
+} // direction change
+
+
+
+x0 = x1;
+y0 = y1;
+
+if (sx1 != 0)
+  sx0 = sx1;
+if (sy1 != 0)
+  sy0 = sy1;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function mustAnalyze(n) {
+
+if ((n == 0) && (oTxt.value.length > 0)) {
+  aDiv.innerHTML = "<i>analyzing . . .</i>";
+  setTimeout("mustAnalyze(1)", 100); }
+
+else {
+
+var txt = oTxt.value.replace(/\s/g, "");
+if (txt.length > 0) {
+
+var len = txt.length;
+var d, d1, d2, dArray, dAL;
+var dd = 0;
+var ddd = 0;
+var d_1 = -1;
+var dev = 0;
+var devH = 0;
+var devL = 0;
+var dMax = -1;
+var dMin = -1;
+var cH = 0;
+var cL = 0;
+var R = 0;
+
+var Sn, Sobs, erfcFreq;
+
+var pi, operand, erfcRuns;
+
+var pSum0, pSum1, maxPS0, maxPS1, sum1, sum2, csP0, csP1, z;
+
+var outputStr = "";
+
+
+
+if (document.theForm.R0[0].checked) // binary
+  dAL = 2;
+else if (document.theForm.R0[1].checked) // hexadecimal
+  dAL = 16;
+else if (document.theForm.R0[2].checked) // decimal
+  dAL = 10;
+else if (document.theForm.R0[3].checked) // base64
+  dAL = 64;
+
+dArray = new Array(dAL);
+for (var i=0; i<dAL; i++)
+  dArray[i] = 0;
+
+for (var i=0; i<len; i++) {
+	if (document.theForm.R0[0].checked) { // binary
+		d = parseInt(txt.charAt(i));
+		if (d != d_1) // start of a run
+		  R ++;
+		d_1 = d;
+	}
+	else if (document.theForm.R0[1].checked) // hexadecimal
+		d = parseInt(txt.charAt(i), 16);
+	else if (document.theForm.R0[2].checked) // decimal
+		d = parseInt(txt.charAt(i));
+	else if (document.theForm.R0[3].checked) // base64
+		d = b64Str.indexOf(txt.charAt(i));
+
+  dArray[d] ++;
+}
+
+for (var i=0; i<dAL; i++) {
+  dev += Math.abs(len/dAL - dArray[i]); // deviation from expected
+  if (dArray[i] > len/dAL) {
+    devH += dArray[i];
+    cH ++;
+  }
+  else if (dArray[i] < len/dAL) {
+    devL += dArray[i];
+    cL ++;
+  }
+}
+
+dev /= dAL;
+devH /= cH; // mean deviations
+devL /= cL;
+if ((cH == 0) && (cL == 0)) {
+  devH = len/dAL;
+  devL = len/dAL;
+}
+
+dMax = Math.max.apply(null, dArray); // max deviations
+dMin = Math.min.apply(null, dArray);
+
+for (var i=0; i<len; i++) { // doubles and triples
+
+  d = txt.charAt(i);
+
+	d1 = txt.charAt((i+1) % len);
+	if (d == d1)
+		dd ++
+
+	d2 = txt.charAt((i+2) % len);
+	if ((d == d1) && (d == d2))
+		ddd ++
+
+}
+
+
+
+
+
+
+
+if (document.theForm.R0[0].checked) { // binary test suite
+
+
+
+// frequency (monobit)
+
+Sn = 0;
+for (var i=0; i<len; i++)
+  Sn += (txt.charAt(i) == 1 ? 1 : -1);
+Sobs = Math.abs(Sn) / Math.sqrt(len);
+erfcFreq = erfc(Sobs/Math.SQRT2);
+
+
+
+// runs
+
+pi = dArray[1] / len;
+operand = Math.abs(R - 2*len*pi*(1 - pi)) / (2*Math.sqrt(2*len)*pi*(1 - pi));
+erfcRuns = erfc(operand);
+
+
+
+// cumulative sums
+
+pSum0 = 0;
+pSum1 = 0;
+maxPS0 = 0;
+maxPS1 = 0;
+
+for (var i=0; i<len; i++) {
+  pSum0 += (txt.charAt(i) == 0 ? -1 : 1);
+  if (Math.abs(pSum0) > maxPS0)
+    maxPS0 = Math.abs(pSum0);
+}
+
+for (var i=len-1; i>=0; i--) {
+  pSum1 += (txt.charAt(i) == 0 ? -1 : 1);
+  if (Math.abs(pSum1) > maxPS1)
+    maxPS1 = Math.abs(pSum1);
+}
+
+
+
+sum1 = 0;
+sum2 = 0;
+z = maxPS0 / Math.sqrt(len);
+
+for (var k = Math.ceil((-len/z + 1)/4); k <= (len/z - 1)/4; k++)
+  sum1 += Phi(((4*k + 1)*z)) - Phi(((4*k - 1)*z));
+
+for (var k = Math.ceil((-len/z - 1)/4); k <= (len/z - 3)/4; k++)
+  sum2 += Phi(((4*k + 3)*z)) - Phi(((4*k + 1)*z));
+
+//csP0 = 1 - sum1 + sum2;
+
+csP0 = sum2 - sum1; // ?
+
+
+
+sum1 = 0;
+sum2 = 0;
+z = maxPS1 / Math.sqrt(len);
+
+for (var k = Math.ceil((-len/z + 1)/4); k <= (len/z - 1)/4; k++)
+  sum1 += Phi(((4*k + 1)*z)) - Phi(((4*k - 1)*z));
+
+for (var k = Math.ceil((-len/z - 1)/4); k <= (len/z - 3)/4; k++)
+  sum2 += Phi(((4*k + 3)*z)) - Phi(((4*k + 1)*z));
+
+//csP1 = 1 - sum1 + sum2;
+
+csP1 = sum2 - sum1; // ?
+
+
+
+} // binary test suite
+
+
+
+
+
+
+
+outputStr += "<div class='mB'>n = " + len.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+
+
+outputStr += "<br>distribution:";
+
+if (!document.theForm.R0[3].checked) {
+  outputStr += "&nbsp; " + (dArray[0] * (dAL/len)).toFixed(3);
+  for (var i=1; i<dAL; i++)
+    outputStr += "|" + (dArray[i] * (dAL/len)).toFixed(3);
+}
+outputStr += "&nbsp; (means " + (devL * (dAL/len)).toFixed(3) + "|" + (devH * (dAL/len)).toFixed(3) +
+  ", range " + (dMin * (dAL/len)).toFixed(3) + "|" + (dMax * (dAL/len)).toFixed(3) + ")";
+
+outputStr += "<br>doubles:&nbsp; " + (dd * (dAL/len)).toFixed(3) +
+  "<br>triples:&nbsp; " + (ddd * ((dAL*dAL)/len)).toFixed(3);
+
+
+
+if (document.theForm.R0[0].checked)
+  outputStr += "<br>frequency (monobit) test:&nbsp; p = " + erfcFreq.toFixed(3) +
+  "<br>runs test:&nbsp; p = " + erfcRuns.toFixed(3) +
+  "<br>cumulative sums test:&nbsp; p0 = " + csP0.toFixed(3) + ", p1 = " + csP1.toFixed(3);
+
+outputStr += "</div>";
+
+
+
+outputStr += "<div>Distribution, doubles, and triples are given as the proportion of expected.&nbsp; Results improve with increasing n.";
+if (document.theForm.R0[0].checked)
+  outputStr += "<br>For p values, > 0.01 is acceptable, > 0.1 is better.";
+outputStr += "</div>";
+
+
+
+aDiv.innerHTML = outputStr;
+
+}
+
+}
+} // mustAnalyze
+
+
+
+
+
+
+
+
+function padString(str, n) {
+
+var len = str.length;
+
+for (var i=0; i<n-len; i++)
+  str = "0" + str;
+
+return str;
+
+}
+
+
+
+
+function erfc(x) {
+
+var sgn = (x < 0 ? -1 : 1);
+
+x = Math.abs(x);
+
+var p = 0.3275911;
+var t = 1/(1 + p*x);
+var a1 = 0.254829592;
+var a2 = -0.284496736;
+var a3 = 1.421413741;
+var a4 = -1.453152027;
+var a5 = 1.061405429;
+
+var erf = 1 - (a1*t + a2*t*t + a3*t*t*t + a4*t*t*t*t + a5*t*t*t*t*t)*Math.exp(-x*x);
+
+return sgn*(1 - erf);
+
+}
+
+
+
+function Phi(x) {
+
+return 0.5 * erfc(-x / Math.SQRT2);
+
+}
+
+
+
+
+function speedUp() {
+
+if (!document.theForm.C11.checked)
+  ji = 1;
+else if (document.theForm.R1[2].checked)
+  ji = 2000;
+else if (document.theForm.R1[1].checked)
+  ji = 200;
+else if (document.theForm.R1[0].checked)
+  ji = 20;
+
+}
+
+
+
+function fyShuffle(str) {
+
+var a = str.split("");
+
+for (var i=a.length-1; i>0; i--) {
+	var j = Math.floor(Math.random() * (i + 1));
+	var temp = a[i];
+	a[i] = a[j];
+	a[j] = temp; }
+
+str = a.join("");
+
+return str;
+}
+
+
+
+function repeatStr(str, n) {
+
+var rStr = "";
+for (var i=0; i<n; i++)
+  rStr += str;
+
+return rStr;
+
+}
+
+
+
+function toggleSho() {
+
+var s = document.getElementById("sho");
+
+if (document.theForm.C12.checked)
+  s.style.fontWeight = "bold";
+
+else
+  s.style.fontWeight = "normal";
+
+}
+
+
+
+function showOutput() {
+
+if (oStrSaved.length > 0)
+  oTxt.value = oStrSaved;
+
+}
+
+
+
+function trimOutput() {
+
+var n = parseInt(document.theForm.limitOutput.value.replace(/,/g, ""));
+
+if (n) {
+	var txt = oTxt.value;
+  var temp = txt;
+	var m;
+	var cnt = 0;
+
+  while ((txt.replace(/\r|\n/g, "").length > n) && (cnt < 1000)) {
+    m = txt.length - txt.replace(/\r|\n/g, "").length;
+    txt = txt.substr(0, n + m);
+    cnt ++;
+  }
+
+  if (txt != temp) {
+    oTxt.value = txt;
+    cP.innerHTML = "n = " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    mem = temp;
+  }
+
+}
+
+}
+
+
+
+function clearFormatting() {
+
+var txt = oTxt.value;
+if (txt.search("\n") >= 0) {
+  mem = txt;
+  txt = txt.replace(/\r|\n/g, "");
+  oTxt.value = txt;
+}
+
+}
+
+
+
+function undo() {
+
+if (mem != "") {
+	var txt = oTxt.value;
+  oTxt.value = mem;
+  cP.innerHTML = "n = " + mem.replace(/\r|\n/g, "").length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  mem = txt;
+}
+
+}
+
+
+
+
+
+
+
+function drawFTable() {
+
+fTable = document.getElementById("fT").cloneNode(true);
+
+var theRow = fTable.rows[0];
+var theCell = fTable.rows[0].cells[0];
+var newRow, newCell;
+
+for (var i=0; i<iW-1; i++) {
+	newCell = theCell.cloneNode(true);
+	theRow.appendChild(newCell); }
+	
+for (var i=0; i<iH-1; i++) {
+	newRow = theRow.cloneNode(true);
+	fTable.firstChild.appendChild(newRow); }
+
+document.getElementById("fDiv").innerHTML = "";
+
+}
+
+
+
+function showPixels(n) {
+
+if ((n == 0) && (oTxt.value.length > 0)) {
+  document.getElementById("fDiv").innerHTML = "";
+  document.getElementById("fDiv").style.display = "";
+  setTimeout("showPixels(1)", 100); }
+
+else {
+
+  var fTableC = fTable.cloneNode(true);
+
+	var digits = oTxt.value.replace(/\s/g, "");
+  if (digits.length > 0) {
+
+		var d;
+
+		for (var i=0; i<iH; i++) {
+		for (var j=0; j<iW; j++) {
+
+			d = digits.charAt(i*iW + j);
+			d = color64Str.indexOf(d) + 1; // -1 becomes 0 etc.
+			fTableC.rows[i].cells[j].style.backgroundColor = "#" + palette64[d];
+
+		}
+		}
+
+    document.getElementById("fDiv").appendChild(fTableC);
+
+  }
+}
+
+}
+
+
+function hidePixels() {
+
+document.getElementById("fDiv").innerHTML = "";
+document.getElementById("fDiv").style.display = "none";
+
+}
+
+
+
+//--></SCRIPT>
+
+<style type="text/css"><!--
+
+body  { margin: 2em; font-family: "Book Antiqua", "Palatino Linotype", Palatino, serif;
+background: url("data:image/png;base64,\
+iVBORw0KGgoAAAANSUhEUgAAAfkAAAFQCAAAAACZzlgeAAAAAXNCSVQI5gpbmQAAAAlwSFlz\
+AAAOxAAADsQBlSsOGwAABMlJREFUeNrt3cFu4jAUQFFCmdL//9ZZIBXIbHAXT4qSMckjj56z\
+odOpG8ONI7lRy3A58CsdvQTKozzKozzKozzKozzKozzKozzKozzKozzKozzK0+3089H98fj9\
+eBwfjx+Pxz8T36GNu4Z/D2HcceVx2fPsPd5eX09r3tUe5VEe5VEe5XmP/Xz8zH3hd7iFf3+F\
+z7f97Hmlcdnz7D3e3l9Pa97VHuVRHuVRHuUpvZ+/T92vHcPjlLZPjfeb233oeL/4+OS47Hn2\
+Hq/K64mrPcqjPMqjPMpTcj8/9o6cut98DefUEPaxveOy55kt+/W05l3tUR7lUR7lUZ7fuZ+f\
+cgv7x0PYRw6d47LnuRdbvZ7WvKs9yqM8yqM8ylN6Pz+s/R3PC/eVa43Lnme2rV5Pa97VHuVR\
+HuVRHuX5nfv5pefM2LmPnLv/vPU897oG13o9rXlXe5RHeZRHeZSn9H5+Nv3Sv/vWfl/78/F4\
+mznHesdlz7P3eHt/Pa15V3uUR3mUR3mUp7Lhcgj7vu+5nwCEx+z3n8+eZ+/x9v56WvOu9iiP\
+8iiP8ijPe+znseZRHuVRHuVRHuVRHuVRHuVRHuVRHuVRHuVRHuVRHuVRHuVRXnmUR3mUR3mU\
+R3mUR3mUR3mUR3mUR3nynH4+yv479e3r2t9/b+/j9hHGHVYeV2WeWz8/a97VHuVRHuVRHuV5\
+j/18fJ/yr/D5tr88h6/rHRdncO+c+dJxVeaZ9fyseVd7lEd5lEd5lKf0fv5+DPvGeP+33ReO\
+932fHRfPuTE8Lj1Xl46rMs/s54erPcqjPMqjPMpTcj8/Tt3/vYZzYwj7yt5x2arMM/v5WfOu\
+9iiP8iiP8ihP7f38MPE/t7APPIT9YO+4vagyz62enzXvao/yKI/yKI/ylN7PT23LJ39Pfpj5\
+jr3jslWZ51bPz5p3tUd5lEd5lEd5au/nl7YfO/eDc/fz93Juv3qe2c/Pmne1R3mUR3mUR3lK\
+7+eP8Rxov3f9+Xi8zZwrvePm9p3/a+nfmdv7PLOenzXvao/yKI/yKI/yVDZc2kfZ7z8f30dt\
+8icO4bF3XJV5Zj0/a97VHuVRHuVRHuV5j/081jzKozzKozzKozzKozzKozzKozzKozzKozzK\
+ozzKozzKozzKK4/yKI/yKI/yKI/yKI/yKI/yKI/yKE+e089H2X/f/tlx7e+/t/dx+wjjDsWP\
+t/U8rXlXe5RHeZRHeZTnPfbz8X3Kv8Ln2z7xHL4ue1yc+X3hM61yvKx5WvOu9iiP8iiP8ijP\
+e+zn2/4v3sdt93fj/eLji8bFc3UMj1OqHC9rnta8qz3KozzKozzKU3s/P3Uf9xrOjSHsD7PH\
+9apyvOx5WvOu9iiP8iiP8ihP7f38lFvYPx7CPnJIHre2vR0v+3Wx5l3tUR7lUR7lUZ733M+f\
+F+4rXz2uV5XjbTVPa97VHuVRHuVRHuWpvZ9f2j7eR84et/W5/erj7XWeuNqjPMqjPMqjPPvc\
+z8dzoP2+9ufj8TZzrmSPm9vnzp3jez9e1jyteVd7lEd5lEd5lKey4W98f7O9v/98fN+2uZ9U\
+nIodL2ue1ryrPcqjPMqjPMpTej9/8RpY8yiP8iiP8iiP8iiP8iiP8iiP8iiP8iiP8ijP8/4B\
+4h23N+ppgbUAAAAASUVORK5CYII=") }
+
+p  { margin-top: 0em; margin-bottom: 1em }
+img  { margin: 6px }
+.title  { font-weight: bold; text-align: center; margin-top: 3em; margin-bottom: 2em }
+.mB  { margin-bottom: 0.5em }
+.refs  { margin-bottom: 3em }
+.small  { font-size: 85% }
+.comment  { font-size: 85%; font-style: italic }
+.imgDiv  { width: 400px; height: 400px; border: 4px outset silver; background-color: #808080 }
+.imgTable td  { font-size: 1px; line-height: 0; width: 2px; height: 2px }
+
+--></style>
+
+</head>
+
+<body>
+
+<br>
+
+<form name="theForm">
+
+<table border=0 cellPadding=0 cellSpacing=0>
+<tr>
+<td vAlign="top">
+<div style="width: 900px; height: 400px;  margin-right: 1em">
+<div id="randomDiv"
+  style="position: relative; width: 100%;  height: 100%; cursor: pointer">&nbsp;</div>
+</div>
+
+</td><td vAlign="top">
+<div style="display: none">
+    <input type="radio" name="R0" id="R00"><label for="R00">binary</label><br>
+<input type="radio" name="R0" id="R01"><label for="R01">hexadecimal</label><br>
+<input type="radio" name="R0" id="R02" checked="checked"><label for="R02">decimal</label><br>
+<input type="radio" name="R0" id="R03"><label for="R03">base64</label><br>
+<input type="radio" name="R0" id="R04"><label for="R04">custom:</label>&nbsp;
+  <input type="checkbox" name="C0" id="C0"><label for="C0">upper case</label>&nbsp;
+  <input type="checkbox" name="C1" id="C1" checked="checked"><label for="C1">lower case</label>&nbsp;
+  <input type="checkbox" name="C2" id="C2" checked="checked"><label for="C2">digits</label>&nbsp;
+  <input type="checkbox" name="C3" id="C3"><label for="C3">special:</label><br>
+  <textarea name="specialChars" cols=60 rows=3 style="margin-left: 2em"> ~`!@#$%^&amp;*()_-+={[}]|\:;&quot;'<,>.?/</textarea>
+   <a href="javascript:;"
+    onclick="document.theForm.specialChars.value=' ~`!@#$%^&amp;*()_-+={[}]|\\:;&quot;\'<,>.?/'; return false">reset</a><br>
+  <input type="radio" name="R0" id="R05"><label for="R05">English letter frequency</label><br>
+  </div>
+  </div>
+</p>
+
+</td>
+</tr>
+</table>
+
+<p class="mB" id="countP">&nbsp;</p>
+
+<textarea name="outputTxt" cols=105 rows=20 class="mB"></textarea>
+
+<p class="mB" hidden>
+<input type="checkbox" name="C11" id="C11" onclick="speedUp()"><label for="C11">speed things up</label>&nbsp;
+  <input type="radio" name="R1" id="R10" onclick="speedUp()"><label for="R10">×10</label>&nbsp;
+  <input type="radio" name="R1" id="R11" onclick="speedUp()"><label for="R11">×100</label>&nbsp;
+  <input type="radio" name="R1" id="R12" onclick="speedUp()" checked="checked"><label for="R12">×1000</label>&nbsp;
+  <span class="comment">(adds more computer-generated pseudorandomness)</span><br>
+
+<input type="checkbox" name="C12" id="C12" onclick="toggleSho()"><label for="C12">hide output</label>
+  <span class="comment">(keeps the script from slowing down at high n)</span> | remember to
+  <a href="javascript:;" onclick="showOutput(); return false" id="sho">show hidden output</a>
+</p>
+
+<p style="display: none">
+  <a href="javascript:;" onclick="trimOutput(); return false">trim</a> output to:&nbsp;
+    <input type="text" name="limitOutput" size=12 value="1,000,000"> |
+  <span style="display: none"><input type="checkbox" name="C10" id="C10" checked="checked"><label for="C10">format
+    output</label> |</span>
+  
+  <a href="javascript:;" onclick="undo(); return false">undo</a><br>
+</p>
+
+<p style="display: none"><span id="analyzeA"><a href="javascript:;" onclick="mustAnalyze(0); return false">analyze</a> <span class="comment">(show hidden output first)</span></span></p>
+
+
+<br>
+
+</div>
+
+<br>
+
+</form>
+
+
+</body>
+</html>
