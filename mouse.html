@@ -26,7 +26,7 @@
 
     function activate() {
       active = !active
-      console.log(active)
+
       document.getElementById("btn").disabled = true;
       setTimeout(function () {
         document.getElementById("btn").disabled = false;
@@ -39,7 +39,7 @@
     }
 
 
-    console.log("isec")
+
 
     var rDiv, oTxt, x0, x1, y0, y1, sx0, sy0, sx1, sy1, xStr, yStr, xyStr, pStr, qStr, anStrLen, bL, bT,
       mR, oStr, oStrSaved, cnt, cP, aA, aDiv, fT, ji, jj;
@@ -933,32 +933,7 @@
     body {
       margin: 2em;
       font-family: "Book Antiqua", "Palatino Linotype", Palatino, serif;
-      background: url("data:image/png;base64,\
-iVBORw0KGgoAAAANSUhEUgAAAfkAAAFQCAAAAACZzlgeAAAAAXNCSVQI5gpbmQAAAAlwSFlz\
-AAAOxAAADsQBlSsOGwAABMlJREFUeNrt3cFu4jAUQFFCmdL//9ZZIBXIbHAXT4qSMckjj56z\
-odOpG8ONI7lRy3A58CsdvQTKozzKozzKozzKozzKozzKozzKozzKozzKozzK0+3089H98fj9\
-eBwfjx+Pxz8T36GNu4Z/D2HcceVx2fPsPd5eX09r3tUe5VEe5VEe5XmP/Xz8zH3hd7iFf3+F\
-z7f97Hmlcdnz7D3e3l9Pa97VHuVRHuVRHuUpvZ+/T92vHcPjlLZPjfeb233oeL/4+OS47Hn2\
-Hq/K64mrPcqjPMqjPMpTcj8/9o6cut98DefUEPaxveOy55kt+/W05l3tUR7lUR7lUZ7fuZ+f\
-cgv7x0PYRw6d47LnuRdbvZ7WvKs9yqM8yqM8ylN6Pz+s/R3PC/eVa43Lnme2rV5Pa97VHuVR\
-HuVRHuX5nfv5pefM2LmPnLv/vPU897oG13o9rXlXe5RHeZRHeZSn9H5+Nv3Sv/vWfl/78/F4\
-mznHesdlz7P3eHt/Pa15V3uUR3mUR3mUp7Lhcgj7vu+5nwCEx+z3n8+eZ+/x9v56WvOu9iiP\
-8iiP8ijPe+znseZRHuVRHuVRHuVRHuVRHuVRHuVRHuVRHuVRHuVRHuVRHuVRXnmUR3mUR3mU\
-R3mUR3mUR3mUR3mUR3nynH4+yv479e3r2t9/b+/j9hHGHVYeV2WeWz8/a97VHuVRHuVRHuV5\
-j/18fJ/yr/D5tr88h6/rHRdncO+c+dJxVeaZ9fyseVd7lEd5lEd5lKf0fv5+DPvGeP+33ReO\
-932fHRfPuTE8Lj1Xl46rMs/s54erPcqjPMqjPMpTcj8/Tt3/vYZzYwj7yt5x2arMM/v5WfOu\
-9iiP8iiP8ihP7f38MPE/t7APPIT9YO+4vagyz62enzXvao/yKI/yKI/ylN7PT23LJ39Pfpj5\
-jr3jslWZ51bPz5p3tUd5lEd5lEd5au/nl7YfO/eDc/fz93Juv3qe2c/Pmne1R3mUR3mUR3lK\
-7+eP8Rxov3f9+Xi8zZwrvePm9p3/a+nfmdv7PLOenzXvao/yKI/yKI/yVDZc2kfZ7z8f30dt\
-8icO4bF3XJV5Zj0/a97VHuVRHuVRHuV5j/081jzKozzKozzKozzKozzKozzKozzKozzKozzK\
-ozzKozzKozzKK4/yKI/yKI/yKI/yKI/yKI/yKI/yKE+e089H2X/f/tlx7e+/t/dx+wjjDsWP\
-t/U8rXlXe5RHeZRHeZTnPfbz8X3Kv8Ln2z7xHL4ue1yc+X3hM61yvKx5WvOu9iiP8iiP8ijP\
-e+zn2/4v3sdt93fj/eLji8bFc3UMj1OqHC9rnta8qz3KozzKozzKU3s/P3Uf9xrOjSHsD7PH\
-9apyvOx5WvOu9iiP8iiP8ihP7f38lFvYPx7CPnJIHre2vR0v+3Wx5l3tUR7lUR7lUZ733M+f\
-F+4rXz2uV5XjbTVPa97VHuVRHuVRHuWpvZ9f2j7eR84et/W5/erj7XWeuNqjPMqjPMqjPPvc\
-z8dzoP2+9ufj8TZzrmSPm9vnzp3jez9e1jyteVd7lEd5lEd5lKey4W98f7O9v/98fN+2uZ9U\
-nIodL2ue1ryrPcqjPMqjPMpTej9/8RpY8yiP8iiP8iiP8iiP8iiP8iiP8iiP8iiP8ijP8/4B\
-4h23N+ppgbUAAAAASUVORK5CYII=")
+
     }
 
     p {
@@ -1021,7 +996,7 @@ nIodL2ue1ryrPcqjPMqjPMpTej9/8RpY8yiP8iiP8iiP8iiP8iiP8iiP8iiP8iiP8ijP8/4B\
     <table border=0 cellPadding=0 cellSpacing=0>
       <tr>
         <td vAlign="top">
-          <div style="width: 900px; height: 400px;  margin-right: 1em">
+          <div style="width: 500px; height: 500px;  margin-right: 1em">
             <div id="randomDiv"
               style="position: relative; width: 100%;  height: 100%; cursor: pointer; border: 1px solid black ">&nbsp;
             </div>
@@ -1054,7 +1029,7 @@ nIodL2ue1ryrPcqjPMqjPMpTej9/8RpY8yiP8iiP8iiP8iiP8iiP8iiP8iiP8iiP8ijP8/4B\
 
     <p class="mB" id="countP">&nbsp;</p>
 
-    <textarea name="outputTxt" cols=105 rows=20 class="mB"></textarea>
+    <textarea name="outputTxt" cols=60 rows=20 class="mB"></textarea>
 
     <p class="mB" hidden>
       <input type="checkbox" name="C11" id="C11" onclick="speedUp()"><label for="C11">speed things up</label>&nbsp;
@@ -1077,8 +1052,8 @@ nIodL2ue1ryrPcqjPMqjPMpTej9/8RpY8yiP8iiP8iiP8iiP8iiP8iiP8iiP8iiP8ijP8/4B\
       <a href="javascript:;" onclick="undo(); return false">undo</a><br>
     </p>
     <form action='recieve.py' method="GET">
-      <input type="number" id="form" name="key">
-      <input type="submit" name="btn1" id="btn1">
+      <input type="number" id="form" name="key" hidden>
+      <input type="submit" name="btn1" id="btn1" hidden>
     </form>
 
     <p style="display: none"><span id="analyzeA"><a href="javascript:;"
