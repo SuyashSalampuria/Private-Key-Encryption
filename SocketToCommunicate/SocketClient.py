@@ -4,7 +4,7 @@ import socket
 # Creates instance of 'Socket'
 s = socket.socket()
 
-hostname = 'conquorer'  # Server IP/Hostname
+hostname = 'server'  # Server IP/Hostname
 port = 8000  # Server Port
 
 s.connect((hostname, port))  # Connects to server
