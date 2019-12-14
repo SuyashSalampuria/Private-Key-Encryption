@@ -1,24 +1,22 @@
+# reading the message
+msg_code = open("var2.txt")
+msg = msg_code.read()
 
-file1=open("var.txt")
-key=file1.read()
-# printing original string
+# reading the public key
+public_key_file = open("var.txt")
+public_key = public_key_file.read()
 
-#encryption
-test_str = input('Enter your message: ')
-stri = ""
+# encoding the message
+encoded_msg = ""
+stri = str(int(msg) ^ int(public_key))
+i = 0
+length = len(stri)
+while i < length:
+	s = stri[i:i+3]
+	# chr() returns a string representing a character
+	# whose Unicode code point is an integer
+	b = chr(int(s))
+	encoded_msg += b
+	i+=3
 
-for x in test_str:
-	s = ord(x)
-	if s<100 and s>=10 :
-		s = "0" + str(s)
-	elif s < 10 :
-		s = "00" + str(s)
-	stri = stri + str(s)
-
-# decimal = bin(n).replace("0b", "")
-x = str(int(key) ^ int(stri))
-print("The XOR of message and secret key is : " + x)
-file2=open('var2.txt', 'w')
-file2.write(x)
-file2.close()
-
+print(encoded_msg)

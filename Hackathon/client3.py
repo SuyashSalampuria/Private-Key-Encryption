@@ -1,13 +1,13 @@
 import socket
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(('0.0.0.0', 8082))
+client.connect(('0.0.0.0', 8080))
 
-file2 = open('var2.txt')
-msg = file2.read()
+# reading the  message to send it
+msg_file = open('var2.txt')
+msg = msg_file.read()
 
 client.send(str(msg).encode())
-# client.send(str(binary).encode())
 
 from_server = client.recv(4096)
 client.close()

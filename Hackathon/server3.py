@@ -1,11 +1,13 @@
+# This file will help server recieve the message
+
 import socket
-serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-serv.bind(('0.0.0.0', 8082))
-serv.listen(5)
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(('0.0.0.0', 8080))
+server.listen(5)
 
-
+# server reading the message
 while True:
-    conn, addr = serv.accept()
+    conn, addr = server.accept()
     from_client = ''
     while True:
         data = conn.recv(4096)
